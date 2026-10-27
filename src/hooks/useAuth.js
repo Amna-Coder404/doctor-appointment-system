@@ -4,7 +4,6 @@ import { supabase } from "../lib/supabase";
 
 import {
     getCurrentSession,
-    resetPassword,
     signInWithEmail,
     signOut,
     signUpWithEmail,
@@ -17,9 +16,7 @@ export default function useAuth() {
     useEffect(() => {
         let mounted = true;
 
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, newSession) => {
+        const { data: { subscription }, } = supabase.auth.onAuthStateChange((_event, newSession) => {
             if (mounted) {
                 setSession(newSession);
                 setLoading(false);
@@ -57,6 +54,6 @@ export default function useAuth() {
         signIn: signInWithEmail,
         signUp: signUpWithEmail,
         signOut,
-        resetPassword,
+
     };
 }

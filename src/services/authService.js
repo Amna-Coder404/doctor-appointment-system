@@ -29,12 +29,15 @@ export async function signUpWithEmail(fullName, email, password) {
 }
 
 // SignOut
-export async function signOut() {
-    const { error } = await supabase.auth.signOut();
+export const signOut = async () => {
+    const { error } = await supabase.auth.signOut({
+        scope: "local",
+    });
 
     if (error) throw error;
-}
 
+    return { error: null };
+};
 // Reset Password
 export async function resetPassword(email) {
     const { error } = await supabase.auth.resetPasswordForEmail(

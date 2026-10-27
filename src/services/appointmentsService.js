@@ -1,20 +1,6 @@
 
 import { supabase } from "../lib/supabase";
 
-export async function getDoctorAvailability(doctorId) {
-    const { data, error } = await supabase
-        .from("doctor_availability")
-        .select(
-            "id, doctor_id, day_of_week, start_time, end_time, slot_duration_minutes"
-        )
-        .eq("doctor_id", doctorId)
-        .eq("is_active", true)
-        .order("start_time");
-
-    if (error) throw error;
-
-    return data ?? [];
-}
 
 export const getBookedAppointments = async (doctorId, date) => {
     const start = new Date(date);

@@ -75,28 +75,6 @@ export default function LoginScreen() {
         }
     };
 
-    const handleForgotPassword = async () => {
-        if (!email.trim()) {
-            Alert.alert(
-                "Enter your email",
-                "Enter your email address first so we can send you a password reset link."
-            );
-            return;
-        }
-
-        try {
-            setLoading(true);
-            await resetPassword(email);
-            Alert.alert(
-                "Check your email",
-                "If the address is registered, you should receive a password reset email."
-            );
-        } catch (error) {
-            Alert.alert("Reset failed", error.message || "Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <KeyboardAvoidingView
@@ -204,15 +182,7 @@ export default function LoginScreen() {
                         </Pressable>
                     </View>
 
-                    {!isSignUp && (
-                        <Pressable
-                            style={styles.forgotButton}
-                            onPress={handleForgotPassword}
-                            disabled={loading}
-                        >
-                            <Text style={styles.forgotText}>Forgot password?</Text>
-                        </Pressable>
-                    )}
+
 
                     <Pressable
                         style={[styles.submitButton, loading && styles.disabledButton]}

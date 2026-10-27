@@ -15,8 +15,8 @@ import colors from "../../lib/colors";
 import { supabase } from "../../lib/supabase";
 import {
     getBookedAppointments,
-    getDoctorAvailability,
-} from "../../services/availabilityService";
+} from "../../services/appointmentsService";
+import { getDoctorAvailability } from "../../services/doctorService";
 import { generateTimeSlots, getDateKey } from "../../utils/utils";
 
 const PURPLE = colors.primary || "#5935FF";
