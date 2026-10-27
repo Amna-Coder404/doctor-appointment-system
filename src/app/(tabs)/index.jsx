@@ -4,29 +4,42 @@ import {
     ActivityIndicator,
     FlatList,
     RefreshControl,
-    StyleSheet,
     Text,
-    View,
+    View
 } from "react-native";
 
 
 import DoctorCard from "../../components/DoctorCard";
+import useAuth from "../../hooks/useAuth";
 import { useDoctors } from "../../hooks/useDoctors";
+import styles from "../../styles/homeScreen.style";
 
 export default function HomeScreen() {
+    const { user } = useAuth();
+
     const router = useRouter();
     const { doctors, loading, error, refreshDoctors } = useDoctors();
 
     return (
         <>
+            <View style={styles.header}>
+                <Text style={styles.greeting}>
+                    Hello {user?.full_name}
+                </Text>
+                <Text style={styles.subtitle}>
+                    Discover trusted doctors and book your appointment.
+                </Text>
+                <Text style={styles.sectionTitle}>
+                    Top doctors
+                </Text>
+            </View>
             <FlatList
                 data={doctors}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <DoctorCard
                         doctor={item}
-                        onPress={() =>
-                            router.push(`/doctor/${item.id}`)
+                        onPress={() => router.push(`/doctor/${item.id}`)
                         }
                     />
                 )}
@@ -38,19 +51,7 @@ export default function HomeScreen() {
                         tintColor="#0F766E"
                     />
                 }
-                ListHeaderComponent={
-                    <View style={styles.header}>
-                        <Text style={styles.greeting}>
-                            Find your doctor
-                        </Text>
-                        <Text style={styles.subtitle}>
-                            Discover trusted doctors and book your appointment.
-                        </Text>
-                        <Text style={styles.sectionTitle}>
-                            Available doctors
-                        </Text>
-                    </View>
-                }
+
                 ListEmptyComponent={
                     <View style={styles.empty}>
                         {loading ? (
@@ -67,38 +68,3 @@ export default function HomeScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    content: {
-        padding: 18,
-        paddingBottom: 32,
-        flexGrow: 1,
-    },
-    header: {
-        marginBottom: 22,
-    },
-    greeting: {
-        fontSize: 27,
-        fontWeight: "800",
-        color: "#172B2A",
-    },
-    subtitle: {
-        fontSize: 14,
-        color: "#6B7280",
-        lineHeight: 21,
-        marginTop: 7,
-    },
-    sectionTitle: {
-        fontSize: 19,
-        fontWeight: "700",
-        color: "#172B2A",
-        marginTop: 26,
-    },
-    empty: {
-        paddingVertical: 36,
-        alignItems: "center",
-    },
-    message: {
-        color: "#6B7280",
-        textAlign: "center",
-    },
-});

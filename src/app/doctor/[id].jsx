@@ -196,14 +196,22 @@ export default function DoctorDetailsScreen() {
                     </View>
                 )}
             </ScrollView>
-
+            {/* GO to Booking PAge */}
             <View style={styles.bottom}>
                 <Pressable
                     style={({ pressed }) => [
                         styles.bookButton,
                         pressed && styles.buttonPressed,
                     ]}
-                    onPress={() => router.push(`/booking/${doctor.id}`)}
+                    onPress={() =>
+                        router.push({
+                            pathname: "/booking/[doctorId]",
+                            params: {
+                                doctorId: doctor.id,
+                                doctor: JSON.stringify(doctor),
+                            },
+                        })
+                    }
                 >
                     <Text style={styles.bookButtonText}>
                         Book Appointment
