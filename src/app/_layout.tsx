@@ -3,9 +3,13 @@ import {
   SafeAreaProvider
 } from "react-native-safe-area-context";
 
+import { LogBox } from "react-native";
 import SafeAreaWrapper from "../components/SafeAreaWrapper";
 import colors from "../lib/colors";
 
+LogBox.ignoreLogs([
+  "[Reanimated] Dependencies should only be used on the web",
+]);
 
 export default function RootLayout() {
   return (

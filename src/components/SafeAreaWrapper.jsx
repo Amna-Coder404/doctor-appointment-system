@@ -1,5 +1,4 @@
-import { SafeAreaView, } from "react-native-safe-area-context";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 function SafeAreaWrapper({ children }) {
     return (
         <SafeAreaView style={{ flex: 1 }}   >

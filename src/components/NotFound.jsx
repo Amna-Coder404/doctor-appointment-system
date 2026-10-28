@@ -1,12 +1,30 @@
-import { Text, View } from 'react-native'
+import { Ionicons } from "@expo/vector-icons";
+import { MotiText, MotiView } from "moti";
 
-const NotFound = ({ text }) => {
+import colors from "../lib/colors";
+import styles from "../styles/notFound.style";
+
+export default function NotFound({
+    text,
+    subtitle,
+    icon = "search-outline",
+}) {
     return (
-        <View>
-            <Text>{text}</Text>
+        <MotiView
+            from={{ opacity: 0, translateY: 10 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: "timing", duration: 300 }}
+            style={styles.card}
+        >
+            <MotiView style={styles.iconCircle}>
+                <Ionicons name={icon} size={34} color={colors.primary} />
+            </MotiView>
 
-        </View>
-    )
+            <MotiText style={styles.title}>{text}</MotiText>
+
+            {subtitle ? (
+                <MotiText style={styles.subtitle}>{subtitle}</MotiText>
+            ) : null}
+        </MotiView>
+    );
 }
-
-export default NotFound

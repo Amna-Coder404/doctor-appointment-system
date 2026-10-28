@@ -1,17 +1,17 @@
-
 import { useRouter } from "expo-router";
 import {
-    ActivityIndicator,
     FlatList,
     RefreshControl,
     Text,
     View
 } from "react-native";
 
-
 import DoctorCard from "../../components/DoctorCard";
+import Loader from "../../components/Loader";
+import NotFound from "../../components/NotFound";
 import useAuth from "../../hooks/useAuth";
 import { useDoctors } from "../../hooks/useDoctors";
+import colors from "../../lib/colors";
 import styles from "../../styles/homeScreen.style";
 
 export default function HomeScreen() {
@@ -33,14 +33,14 @@ export default function HomeScreen() {
                     Top doctors
                 </Text>
             </View>
+
             <FlatList
                 data={doctors}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => String(item.id)}
                 renderItem={({ item }) => (
                     <DoctorCard
                         doctor={item}
-                        onPress={() => router.push(`/doctor/${item.id}`)
-                        }
+                        onPress={() => router.push(`/doctor/${item.id}`)}
                     />
                 )}
                 contentContainerStyle={styles.content}
@@ -48,23 +48,27 @@ export default function HomeScreen() {
                     <RefreshControl
                         refreshing={loading && doctors.length > 0}
                         onRefresh={refreshDoctors}
-                        tintColor="#0F766E"
+                        tintColor={colors.primary}
                     />
                 }
-
                 ListEmptyComponent={
-                    <View style={styles.empty}>
-                        {loading ? (
-                            <ActivityIndicator size="large" color="#0F766E" />
-                        ) : (
-                            <Text style={styles.message}>
-                                {error || "No active doctors found."}
-                            </Text>
-                        )}
-                    </View>
+                    loading ? (
+                        <Loader />
+                    ) : error ? (
+                        <NotFound
+                            icon="alert-circle-outline"
+                            text="Something went wrong"
+                            subtitle={error}
+                        />
+                    ) : (
+                        <NotFound
+                            icon="medkit-outline"
+                            text="No active doctors found"
+                            subtitle="Please check back later."
+                        />
+                    )
                 }
             />
         </>
     );
 }
-

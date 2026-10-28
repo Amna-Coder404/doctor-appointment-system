@@ -165,7 +165,7 @@ export default function ProfileModal({ visible, onClose, onSaved }) {
                             {!!error && (
                                 <Text style={styles.error}>{error}</Text>
                             )}
-
+                            {/* TODO later : add Moti Lib for reuseable componets */}
                             <Pressable
                                 style={[
                                     styles.saveButton,

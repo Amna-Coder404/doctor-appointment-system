@@ -1,60 +1,72 @@
+import { MotiText, MotiView } from "moti";
+import { MotiPressable } from "moti/interactions";
+import { Image } from "react-native";
 
-import { Image, Pressable, Text, View } from "react-native";
-
-import styles from "../styles/Cards.stlye";
+import styles from "../styles/homeScreen.style";
 
 export default function DoctorCard({ doctor, onPress }) {
     return (
-        <Pressable
-            style={({ pressed }) => [
-                styles.card,
-                pressed && styles.pressed,
-            ]}
+        <MotiPressable
             onPress={onPress}
+            from={{ opacity: 0, translateY: 12 }}
+            animate={({ pressed }) => {
+                "worklet";
+                return {
+                    opacity: 1,
+                    translateY: 0,
+                    scale: pressed ? 0.98 : 1,
+                };
+            }}
+            transition={{ type: "timing", duration: 200 }}
+            style={styles.doctorCard}
         >
             {doctor.profile_image_url ? (
                 <Image
                     source={{ uri: doctor.profile_image_url }}
-                    style={styles.image}
+                    style={styles.doctorImage}
                 />
             ) : (
-                <View style={[styles.image, styles.placeholder]}>
-                    <Text style={styles.initial}>
+                <MotiView
+                    style={[styles.doctorImage, styles.doctorPlaceholder]}
+                >
+                    <MotiText style={styles.doctorInitial}>
                         {doctor.full_name?.charAt(0)?.toUpperCase() || "D"}
-                    </Text>
-                </View>
+                    </MotiText>
+                </MotiView>
             )}
 
-            <View style={styles.details}>
-                <Text style={styles.name} numberOfLines={1}>
+            <MotiView style={styles.doctorDetails}>
+                <MotiText style={styles.doctorName} numberOfLines={1}>
                     {doctor.full_name}
-                </Text>
+                </MotiText>
 
-                <Text style={styles.specialization} numberOfLines={1}>
+                <MotiText style={styles.doctorSpecialization} numberOfLines={1}>
                     {doctor.specialization}
-                </Text>
+                </MotiText>
 
                 {!!doctor.qualification && (
-                    <Text style={styles.qualification} numberOfLines={1}>
+                    <MotiText
+                        style={styles.doctorQualification}
+                        numberOfLines={1}
+                    >
                         {doctor.qualification}
-                    </Text>
+                    </MotiText>
                 )}
 
-                <Text style={styles.experience}>
+                <MotiText style={styles.doctorExperience}>
                     {doctor.experience_years} years experience
-                </Text>
+                </MotiText>
 
-                <View style={styles.footer}>
-                    <Text style={styles.fee}>
+                <MotiView style={styles.doctorFooter}>
+                    <MotiText style={styles.doctorFee}>
                         Fee {Number(doctor.consultation_fee).toLocaleString()}
-                    </Text>
+                    </MotiText>
 
-                    <Text style={styles.viewDetails}>
+                    <MotiText style={styles.doctorViewDetails}>
                         View details →
-                    </Text>
-                </View>
-            </View>
-        </Pressable>
+                    </MotiText>
+                </MotiView>
+            </MotiView>
+        </MotiPressable>
     );
 }
-
