@@ -19,7 +19,21 @@ export const formatTime = (time) => {
         minute: "2-digit",
     });
 };
+export const formatDate = (dateString) => {
+    if (!dateString) return "";
 
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return date.toLocaleString("en-PK", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+    });
+};
 export function generateTimeSlots(schedule, date) {
     const slots = [];
 

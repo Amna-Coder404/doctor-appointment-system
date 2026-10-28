@@ -9,6 +9,7 @@ import {
 import DoctorCard from "../../components/DoctorCard";
 import Loader from "../../components/Loader";
 import NotFound from "../../components/NotFound";
+import NotificationBell from "../../components/NotificationBell";
 import useAuth from "../../hooks/useAuth";
 import { useDoctors } from "../../hooks/useDoctors";
 import colors from "../../lib/colors";
@@ -22,18 +23,26 @@ export default function HomeScreen() {
 
     return (
         <>
-            <View style={styles.header}>
-                <Text style={styles.greeting}>
-                    Hello {user?.full_name}
-                </Text>
-                <Text style={styles.subtitle}>
-                    Discover trusted doctors and book your appointment.
-                </Text>
-                <Text style={styles.sectionTitle}>
-                    Top doctors
-                </Text>
-            </View>
+            <View
+                style={{
+                    flexDirection: "row",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    gap: 12,
+                }}
+            >
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.greeting}>
+                        Hello {user?.full_name || "there"}
+                    </Text>
 
+                    <Text style={styles.subtitle}>
+                        Discover trusted doctors and book your appointment.
+                    </Text>
+                </View>
+
+                <NotificationBell userId={user?.id} />
+            </View>
             <FlatList
                 data={doctors}
                 keyExtractor={(item) => String(item.id)}
