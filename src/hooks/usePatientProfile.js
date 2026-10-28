@@ -74,8 +74,8 @@ export const usePatientProfile = () => {
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 0.8,
+                base64: true,
             });
-
             if (!result.canceled) {
                 setImage(result.assets[0]);
             }

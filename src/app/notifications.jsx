@@ -147,11 +147,7 @@ export default function NotificationsScreen() {
                     hitSlop={10}
                     style={styles.backButton}
                 >
-                    <Ionicons
-                        name="arrow-back"
-                        size={24}
-                        color={colors.text}
-                    />
+                    <Ionicons name="chevron-back" size={26} color={colors.text} />
                 </Pressable>
 
                 <View style={styles.headerContent}>

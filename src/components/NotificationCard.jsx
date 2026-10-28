@@ -38,10 +38,9 @@ export default function NotificationCard({ item, index = 0, onPress, onLongPress
                     ]}
                 >
                     <Ionicons
-                        name={
-                            isRead
-                                ? "notifications-outline"
-                                : "notifications"
+                        name={isRead
+                            ? "notifications-outline"
+                            : "notifications"
                         }
                         size={22}
                         color={colors.primary}
@@ -71,11 +70,6 @@ export default function NotificationCard({ item, index = 0, onPress, onLongPress
                             {formatDate(item.created_at)}
                         </Text>
 
-                        <Ionicons
-                            name="ellipsis-horizontal"
-                            size={18}
-                            color={colors.textSecondary}
-                        />
                     </View>
                 </View>
             </Pressable>

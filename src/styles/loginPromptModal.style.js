@@ -1,0 +1,87 @@
+import { StyleSheet } from "react-native";
+import colors from "../lib/colors";
+
+export default StyleSheet.create({
+    overlay: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 24,
+        backgroundColor: colors.overlay,
+    },
+    backdrop: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: colors.overlay,
+    },
+    card: {
+        width: "100%",
+        maxWidth: 380,
+        alignSelf: "center",
+        paddingVertical: 30,
+        paddingHorizontal: 22,
+        borderRadius: 28,
+        alignItems: "center",
+        backgroundColor: colors.surface,
+        shadowColor: colors.text,
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+        shadowOffset: { width: 0, height: 10 },
+        elevation: 12,
+    },
+    closeBtn: {
+        position: "absolute",
+        top: 14,
+        right: 14,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.inputBackground,
+    },
+    iconCircle: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 20,
+        backgroundColor: colors.iconBackground,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: "700",
+        color: colors.text,
+        textAlign: "center",
+    },
+    description: {
+        marginTop: 8,
+        fontSize: 14,
+        lineHeight: 21,
+        color: colors.textSecondary,
+        textAlign: "center",
+    },
+    primaryBtn: {
+        width: "100%",
+        height: 50,
+        marginTop: 24,
+        borderRadius: 25,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.primary,
+    },
+    primaryText: {
+        fontSize: 15,
+        fontWeight: "700",
+        color: colors.textOnPrimary,
+    },
+    secondaryBtn: {
+        marginTop: 14,
+        paddingVertical: 6,
+    },
+    secondaryText: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: colors.textSecondary,
+    },
+});

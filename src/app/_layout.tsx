@@ -26,7 +26,7 @@ export default function RootLayout() {
         >
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="doctor/[id]" />
-          <Stack.Screen name="booking-confirmation" />
+
           <Stack.Screen name="auth/login" />
           <Stack.Screen name="booking/[doctorId]" />
           <Stack.Screen name="auth/complete-profile" />

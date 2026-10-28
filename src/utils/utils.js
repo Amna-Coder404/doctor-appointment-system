@@ -121,3 +121,17 @@ export const formatMoney = (amount) => {
 
     return `PKR ${value.toLocaleString("en-PK")}`;
 };
+
+
+export function getImageSource(url, version) {
+    if (!url || typeof url !== "string") return null;
+
+    const clean = url.trim();
+    if (!/^https?:\/\//i.test(clean)) return null;
+
+    const uri = version
+        ? `${clean}${clean.includes("?") ? "&" : "?"}v=${encodeURIComponent(version)}`
+        : clean;
+
+    return { uri };
+}
