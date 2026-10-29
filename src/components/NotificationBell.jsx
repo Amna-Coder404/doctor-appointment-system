@@ -1,6 +1,6 @@
 
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { MotiView } from "moti";
 import { Pressable, Text } from "react-native";
 
@@ -10,7 +10,15 @@ import styles from "../styles/notificationBell.style";
 
 export default function NotificationBell({ userId, role = "patient" }) {
     const router = useRouter();
-    const { unreadCount } = useNotifications(userId, role);
+    const { unreadCount, refreshNotifications } = useNotifications(userId, role);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (userId) {
+                refreshNotifications(true);
+            }
+        }, [userId, refreshNotifications])
+    );
 
     return (
         <Pressable
