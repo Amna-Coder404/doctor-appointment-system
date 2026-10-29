@@ -7,6 +7,7 @@ import styles from "../styles/notFound.style";
 export default function NotFound({
     text,
     subtitle,
+    actionLabel,
     icon = "search-outline",
 }) {
     return (

@@ -1,6 +1,16 @@
 import { StyleSheet } from "react-native";
 import colors from "../lib/colors";
 
+const DANGER_BORDER = "rgba(220, 38, 38, 0.25)";
+
+const CARD_SHADOW = {
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 2,
+};
+
 const styles = StyleSheet.create({
     // Screen
     container: {
@@ -10,8 +20,9 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
     },
     title: {
-        fontSize: 26,
+        fontSize: 28,
         fontWeight: "800",
+        letterSpacing: -0.5,
         color: colors.text,
     },
     subtitle: {
@@ -26,46 +37,50 @@ const styles = StyleSheet.create({
     },
     listContent: {
         paddingHorizontal: 20,
-        paddingTop: 16,
-        paddingBottom: 32,
+        paddingTop: 20,
+        paddingBottom: 40,
         flexGrow: 1,
     },
     emptyListContent: {
         flexGrow: 1,
     },
     screenHeader: {
-        marginBottom: 20,
+        marginBottom: 8,
     },
 
-    // Summary
+    // Summary (primary banner)
     summary: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 12,
-        marginTop: 20,
+        gap: 14,
+        marginTop: 22,
         marginBottom: 8,
-        padding: 16,
-        backgroundColor: colors.surface,
-        borderRadius: 18,
-        borderWidth: 1,
-        borderColor: colors.border,
+        padding: 18,
+        backgroundColor: colors.primary,
+        borderRadius: 22,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 16,
+        elevation: 5,
     },
     summaryIcon: {
-        width: 46,
-        height: 46,
-        borderRadius: 14,
-        backgroundColor: colors.surfaceMint,
+        width: 50,
+        height: 50,
+        borderRadius: 16,
+        backgroundColor: "rgba(255,255,255,0.18)",
         alignItems: "center",
         justifyContent: "center",
     },
     summaryNumber: {
-        fontSize: 22,
-        fontWeight: "700",
-        color: colors.text,
+        fontSize: 26,
+        fontWeight: "800",
+        letterSpacing: -0.3,
+        color: colors.textOnPrimary,
     },
     summaryLabel: {
         fontSize: 13,
-        color: colors.textSecondary,
+        color: "rgba(255,255,255,0.8)",
         marginTop: 2,
     },
 
@@ -73,7 +88,7 @@ const styles = StyleSheet.create({
     filterList: {
         flexDirection: "row",
         gap: 10,
-        paddingVertical: 12,
+        paddingVertical: 14,
         paddingRight: 8,
     },
     filterButton: {
@@ -105,21 +120,22 @@ const styles = StyleSheet.create({
     // Appointment card
     card: {
         backgroundColor: colors.surface,
-        borderRadius: 18,
+        borderRadius: 22,
         borderWidth: 1,
         borderColor: colors.border,
         padding: 16,
         marginBottom: 16,
+        ...CARD_SHADOW,
     },
     cardHeader: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 10,
+        gap: 12,
     },
     doctorIcon: {
-        width: 46,
-        height: 46,
-        borderRadius: 14,
+        width: 50,
+        height: 50,
+        borderRadius: 16,
         backgroundColor: colors.doctorPlaceholder,
         alignItems: "center",
         justifyContent: "center",
@@ -128,87 +144,167 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     doctorName: {
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: "700",
+        letterSpacing: -0.2,
         color: colors.text,
     },
     specialization: {
-        fontSize: 12,
+        fontSize: 12.5,
         color: colors.textSecondary,
-        marginTop: 4,
-    },
-    statusBadge: {
-        borderRadius: 20,
-        paddingHorizontal: 9,
-        paddingVertical: 6,
-        maxWidth: 100,
+        marginTop: 3,
     },
 
-    statusPending: { backgroundColor: colors.warning },
-    statusConfirmed: { backgroundColor: colors.success },
-    statusCompleted: { backgroundColor: colors.primary },
-    statusCancelled: { backgroundColor: colors.danger },
-    statusUnknown: { backgroundColor: colors.textSecondary },
+    // Status badge
+    statusBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        borderRadius: 999,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        alignSelf: "flex-start",
+    },
+    statusDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+    },
     statusText: {
-        color: colors.textOnPrimary,
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: "700",
         textTransform: "capitalize",
     },
-    divider: {
-        height: 1,
-        backgroundColor: colors.borderLight,
-        marginVertical: 16,
-    },
-    detailRow: {
+
+    statusPending: { backgroundColor: colors.warningBackground },
+    statusPendingText: { color: colors.warning },
+    statusPendingDot: { backgroundColor: colors.warning },
+
+    statusConfirmed: { backgroundColor: colors.successBackground },
+    statusConfirmedText: { color: colors.success },
+    statusConfirmedDot: { backgroundColor: colors.success },
+
+    statusCompleted: { backgroundColor: colors.surfaceMint },
+    statusCompletedText: { color: colors.primary },
+    statusCompletedDot: { backgroundColor: colors.primary },
+
+    statusCancelled: { backgroundColor: colors.dangerBackground },
+    statusCancelledText: { color: colors.danger },
+    statusCancelledDot: { backgroundColor: colors.danger },
+
+    statusUnknown: { backgroundColor: colors.inputBackground },
+    statusUnknownText: { color: colors.textSecondary },
+    statusUnknownDot: { backgroundColor: colors.textMuted },
+
+    // Schedule panel (Start | End)
+    scheduleBox: {
         flexDirection: "row",
-        alignItems: "flex-start",
-        gap: 12,
-        marginBottom: 16,
+        alignItems: "stretch",
+        marginTop: 16,
+        backgroundColor: colors.inputBackground,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: colors.borderLight,
     },
-    detailContent: {
+    scheduleCell: {
         flex: 1,
+        padding: 12,
     },
-    detailLabel: {
-        fontSize: 12,
+    scheduleDivider: {
+        width: 1,
+        backgroundColor: colors.border,
+        marginVertical: 12,
+    },
+    scheduleHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 8,
+    },
+    scheduleIcon: {
+        width: 26,
+        height: 26,
+        borderRadius: 8,
+        backgroundColor: colors.iconBackground,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    scheduleLabel: {
+        fontSize: 11.5,
+        fontWeight: "600",
         color: colors.textSecondary,
+        letterSpacing: 0.3,
+        textTransform: "uppercase",
     },
-    detailValue: {
+    scheduleValue: {
         fontSize: 13,
+        fontWeight: "600",
+        lineHeight: 18,
         color: colors.text,
-        fontWeight: "500",
-        marginTop: 4,
     },
-    paymentRow: {
+
+    // Footer (fee + payment)
+    footerRow: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+        marginTop: 16,
+    },
+    feeLabel: {
+        fontSize: 12,
+        color: colors.textSecondary,
+    },
+    feeValue: {
+        fontSize: 18,
+        fontWeight: "800",
+        letterSpacing: -0.3,
+        color: colors.primary,
+        marginTop: 2,
+    },
+    paymentPill: {
+        borderRadius: 999,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+    },
+    paymentPillText: {
+        fontSize: 11.5,
+        fontWeight: "700",
+        textTransform: "capitalize",
+    },
+    pillSuccess: { backgroundColor: colors.successBackground },
+    pillSuccessText: { color: colors.success },
+    pillWarning: { backgroundColor: colors.warningBackground },
+    pillWarningText: { color: colors.warning },
+    pillDanger: { backgroundColor: colors.dangerBackground },
+    pillDangerText: { color: colors.danger },
+    pillNeutral: { backgroundColor: colors.inputBackground },
+    pillNeutralText: { color: colors.textSecondary },
+
+    // Actions (small cancel button)
+    actionsRow: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        marginTop: 14,
         paddingTop: 14,
         borderTopWidth: 1,
         borderTopColor: colors.borderLight,
     },
-    paymentValue: {
-        fontSize: 12,
-        fontWeight: "600",
-        color: colors.text,
-        textTransform: "capitalize",
-    },
     cancelButton: {
-        minHeight: 46,
-        marginTop: 16,
+        height: 34,
+        paddingHorizontal: 14,
+        borderRadius: 10,
         borderWidth: 1,
-        borderColor: "#FECACA",
+        borderColor: DANGER_BORDER,
         backgroundColor: colors.dangerBackground,
-        borderRadius: 12,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        gap: 8,
+        gap: 6,
     },
     cancelText: {
-        fontSize: 13,
+        fontSize: 12,
         color: colors.danger,
-        fontWeight: "600",
+        fontWeight: "700",
     },
 
     // Loading and pagination
@@ -235,12 +331,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         paddingHorizontal: 24,
-        paddingVertical: 32,
+        paddingVertical: 36,
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: 18,
+        borderRadius: 22,
         marginTop: 8,
+        ...CARD_SHADOW,
     },
     iconCircle: {
         width: 68,
@@ -272,9 +369,9 @@ const styles = StyleSheet.create({
         gap: 10,
         padding: 14,
         backgroundColor: colors.dangerBackground,
-        borderColor: "#FECACA",
+        borderColor: DANGER_BORDER,
         borderWidth: 1,
-        borderRadius: 12,
+        borderRadius: 14,
         marginTop: 12,
     },
     errorContent: {
@@ -283,11 +380,11 @@ const styles = StyleSheet.create({
     errorTitle: {
         fontSize: 13,
         fontWeight: "700",
-        color: "#991B1B",
+        color: colors.danger,
     },
     errorText: {
         fontSize: 12,
-        color: "#991B1B",
+        color: colors.danger,
         marginTop: 5,
         lineHeight: 18,
     },

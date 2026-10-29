@@ -7,18 +7,26 @@ import {
     Alert,
     FlatList,
     RefreshControl,
+    View
 } from "react-native";
 import AppointmentCard from "../../components/appointments/AppointmentCard";
 import AppointmentFilters from "../../components/appointments/AppointmentFilters";
 import Loader from "../../components/Loader";
 import NotFound from "../../components/NotFound";
-import SafeAreaWrapper from "../../components/SafeAreaWrapper";
 import { useMyAppointments } from "../../hooks/useMyAppointments";
 import colors from "../../lib/colors";
 import styles from "../../styles/appointmentsScreen.style";
 
+import { useRouter } from "expo-router";
+import useAuth from "../../hooks/useAuth";
+
 
 export default function AppointmentsScreen() {
+    const { user, loading: authLoading } = useAuth();
+
+
+    const router = useRouter();
+
     const {
         appointments,
         filteredAppointments,
@@ -83,10 +91,21 @@ export default function AppointmentsScreen() {
     };
 
 
-    if (loading) return <Loader />
+    if (authLoading) return <Loader />
+    if (!user) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <NotFound
+                    icon="lock-closed-outline"
+                    text="Please Sign In first"
+                    subtitle="Sign in to view and manage your appointments."
+                />
+            </View>
+        );
+    }
 
     return (
-        <SafeAreaWrapper>
+        <>
             <FlatList
                 style={styles.list}
                 contentContainerStyle={[
@@ -105,13 +124,6 @@ export default function AppointmentsScreen() {
                 )}
                 ListHeaderComponent={
                     <MotiView style={styles.screenHeader}>
-                        <MotiText style={styles.title}>
-                            My Appointments
-                        </MotiText>
-
-                        <MotiText style={styles.subtitle}>
-                            Manage your upcoming and previous visits.
-                        </MotiText>
 
                         <MotiView
                             from={{ opacity: 0, translateY: 10 }}
@@ -179,9 +191,7 @@ export default function AppointmentsScreen() {
                                         style={styles.retryButton}
                                     >
                                         <MotiText style={styles.retryText}>
-                                            {retrying
-                                                ? "Retrying..."
-                                                : "Try again"}
+                                            {retrying ? "Retrying..." : "Try again"}
                                         </MotiText>
                                     </MotiPressable>
                                 </MotiView>
@@ -218,9 +228,7 @@ export default function AppointmentsScreen() {
                         </MotiView>
                     ) : hasMore ? (
                         <MotiView style={styles.footer}>
-                            <MotiText style={styles.mutedText}>
-                                Scroll to see more appointments
-                            </MotiText>
+                            <ActivityIndicator size={"small"} />
                         </MotiView>
                     ) : null
                 }
@@ -236,6 +244,6 @@ export default function AppointmentsScreen() {
                 }
                 showsVerticalScrollIndicator={false}
             />
-        </SafeAreaWrapper>
+        </>
     );
 }

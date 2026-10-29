@@ -1,112 +1,198 @@
-
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import {
-    Pressable,
-    StyleSheet,
-    Text,
-    View
-} from "react-native";
+import { MotiView } from "moti";
+import { useEffect, useState } from "react";
+import { Image, Pressable, Text, View } from "react-native";
+
 import Loader from "../../components/Loader";
 import ProfileModal from "../../components/ProfileModal";
 import useAuth from "../../hooks/useAuth";
 import { usePatientProfile } from "../../hooks/usePatientProfile";
 import colors from "../../lib/colors";
+import styles from "../../styles/profileScreen.style";
+import { getImageSource } from "../../utils/utils";
+
+// Reusable fade + slide-up wrapper with stagger delay
+function FadeUp({ delay = 0, style, children }) {
+    return (
+        <MotiView
+            from={{ opacity: 0, translateY: 16 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: "timing", duration: 350, delay }}
+            style={style}
+        >
+            {children}
+        </MotiView>
+    );
+}
 
 export default function ProfileScreen() {
     const router = useRouter();
     const { user, loading: authLoading, signOut } = useAuth();
-    const { loadCurrentUserProfile, error, profile } = usePatientProfile();
-
+    const { loadCurrentUserProfile, profile } = usePatientProfile();
 
     const [profileModalVisible, setProfileModalVisible] = useState(false);
+    const [avatarFailed, setAvatarFailed] = useState(false);
 
+    const avatarSource = getImageSource(
+        profile?.avatar_url,
+        profile?.updated_at
+    );
 
+    useEffect(() => {
+        setAvatarFailed(false);
+    }, [profile?.avatar_url]);
 
+    if (authLoading) return <Loader />;
 
-    if (authLoading) return <Loader />
     return (
         <View style={styles.container}>
-            <Text style={styles.subtitle}>
-                Manage your personal information.
-            </Text>
+            {/* Banner */}
+            <View style={styles.banner}>
+                <Text style={styles.bannerTitle}>Profile</Text>
+                <Text style={styles.bannerSubtitle}>
+                    Manage your personal information.
+                </Text>
+            </View>
 
             {!user ? (
-                <View style={styles.profileCard}>
+                <MotiView
+                    from={{ opacity: 0, translateY: 24, scale: 0.97 }}
+                    animate={{ opacity: 1, translateY: 0, scale: 1 }}
+                    transition={{ type: "spring", damping: 16, stiffness: 140 }}
+                    style={[styles.profileCard, styles.guestCard]}
+                >
                     <Text style={styles.name}>Welcome</Text>
                     <Text style={styles.email}>
                         Sign in to view and manage your profile.
                     </Text>
 
                     <Pressable
-                        style={styles.button}
+                        style={styles.signInButton}
                         onPress={() => router.push("/auth/login")}
                     >
                         <Text style={styles.buttonText}>Sign In</Text>
                     </Pressable>
-                </View>
+                </MotiView>
             ) : (
-                <View style={styles.profileCard}>
-                    <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>
-                            {(profile?.full_name || user.email || "U")
-                                .charAt(0)
-                                .toUpperCase()}
-                        </Text>
-                    </View>
-
-                    <Text style={styles.name}>
-                        {profile?.full_name || "Add your full name"}
-                    </Text>
-
-                    <Text style={styles.email}>
-                        {profile?.email || user.email}
-                    </Text>
-
-                    <View style={styles.infoCard}>
-                        <View style={styles.infoContent}>
-                            <Text style={styles.infoLabel}>Phone</Text>
-                            <Text style={styles.infoValue}>
-                                {profile?.phone || "Add phone number"}
-                            </Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.infoCard}>
-                        <View style={styles.infoContent}>
-                            <Text style={styles.infoLabel}>City</Text>
-                            <Text style={styles.infoValue}>
-                                {profile?.city || "Add city"}
-                            </Text>
-                        </View>
-                    </View>
-
-                    <Pressable onPress={() => setProfileModalVisible(true)} style={styles.button}>
-                        <Text style={styles.buttonText}>Edit Profile</Text>
-                    </Pressable>
-                    <Pressable
-                        onPress={async () => {
-                            try {
-                                await signOut();
-                            } catch (err) {
-                                console.error("Sign out error:", err.message);
-                            }
+                <MotiView
+                    from={{ opacity: 0, translateY: 24, scale: 0.97 }}
+                    animate={{ opacity: 1, translateY: 0, scale: 1 }}
+                    transition={{ type: "spring", damping: 16, stiffness: 140 }}
+                    style={styles.profileCard}
+                >
+                    {/* Avatar (overlaps banner) */}
+                    <MotiView
+                        from={{ scale: 0, rotate: "-20deg" }}
+                        animate={{ scale: 1, rotate: "0deg" }}
+                        transition={{
+                            type: "spring",
+                            damping: 11,
+                            stiffness: 150,
+                            delay: 150,
                         }}
-                        style={{
-                            backgroundColor: colors.surface,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            padding: 15,
-                            borderRadius: 14,
-                            alignItems: "center",
-                            marginTop: 12,
-                            width: "100%",
-                        }}
+                        style={styles.avatar}
                     >
-                        <Text style={{ color: colors.text, fontWeight: "700" }}>
-                            Sign Out
+                        {avatarSource && !avatarFailed ? (
+                            <Image
+                                source={avatarSource}
+                                style={styles.avatarImage}
+                                onError={() => setAvatarFailed(true)}
+                            />
+                        ) : (
+                            <Ionicons
+                                name="person"
+                                size={44}
+                                color={colors.primary}
+                            />
+                        )}
+                    </MotiView>
+
+                    <FadeUp delay={250}>
+                        <Text style={styles.name}>
+                            {profile?.full_name || "Add your full name"}
                         </Text>
-                    </Pressable>
+                    </FadeUp>
+
+                    <FadeUp delay={320}>
+                        <Text style={styles.email}>
+                            {profile?.email || user.email}
+                        </Text>
+                    </FadeUp>
+
+                    <FadeUp delay={400} style={{ width: "100%" }}>
+                        <View style={styles.infoCard}>
+                            <View style={styles.infoIcon}>
+                                <Ionicons
+                                    name="call-outline"
+                                    size={20}
+                                    color={colors.primary}
+                                />
+                            </View>
+                            <View style={styles.infoContent}>
+                                <Text style={styles.infoLabel}>Phone</Text>
+                                <Text style={styles.infoValue}>
+                                    {profile?.phone || "Add phone number"}
+                                </Text>
+                            </View>
+                        </View>
+                    </FadeUp>
+
+                    <FadeUp delay={480} style={{ width: "100%" }}>
+                        <View style={styles.infoCard}>
+                            <View style={styles.infoIcon}>
+                                <Ionicons
+                                    name="location-outline"
+                                    size={20}
+                                    color={colors.primary}
+                                />
+                            </View>
+                            <View style={styles.infoContent}>
+                                <Text style={styles.infoLabel}>City</Text>
+                                <Text style={styles.infoValue}>
+                                    {profile?.city || "Add city"}
+                                </Text>
+                            </View>
+                        </View>
+                    </FadeUp>
+
+                    <FadeUp delay={560} style={{ width: "100%" }}>
+                        <View style={styles.actions}>
+                            <Pressable
+                                onPress={() => setProfileModalVisible(true)}
+                                style={styles.button}
+                            >
+                                <Ionicons
+                                    name="create-outline"
+                                    size={17}
+                                    color={colors.textOnPrimary}
+                                />
+                                <Text style={styles.buttonText}>Edit Profile</Text>
+                            </Pressable>
+
+                            <Pressable
+                                onPress={async () => {
+                                    try {
+                                        await signOut();
+                                    } catch (err) {
+                                        console.error(
+                                            "Sign out error:",
+                                            err.message
+                                        );
+                                    }
+                                }}
+                                style={styles.signOutButton}
+                            >
+                                <Ionicons
+                                    name="log-out-outline"
+                                    size={17}
+                                    color={colors.danger}
+                                />
+                                <Text style={styles.signOutText}>Sign Out</Text>
+                            </Pressable>
+                        </View>
+                    </FadeUp>
+
                     <ProfileModal
                         visible={profileModalVisible}
                         onClose={() => setProfileModalVisible(false)}
@@ -115,101 +201,8 @@ export default function ProfileScreen() {
                             setProfileModalVisible(false);
                         }}
                     />
-                </View>
+                </MotiView>
             )}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.background,
-        padding: 20,
-    },
-    center: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.background,
-        padding: 20,
-    },
-    subtitle: {
-        fontSize: 14,
-        color: colors.textSecondary,
-        marginTop: 6,
-    },
-    profileCard: {
-        alignItems: "center",
-        backgroundColor: colors.surface,
-        borderRadius: 20,
-        padding: 24,
-        marginTop: 28,
-        borderWidth: 1,
-        borderColor: colors.border,
-    },
-    avatar: {
-        width: 82,
-        height: 82,
-        borderRadius: 41,
-        backgroundColor: colors.doctorPlaceholder,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    avatarText: {
-        fontSize: 30,
-        fontWeight: "800",
-        color: colors.text,
-    },
-    name: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: colors.text,
-        marginTop: 14,
-    },
-    email: {
-        color: colors.textSecondary,
-        fontSize: 13,
-        marginTop: 5,
-        textAlign: "center",
-    },
-    infoCard: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: colors.background,
-        padding: 16,
-        borderRadius: 16,
-        marginTop: 14,
-        width: "100%",
-    },
-    infoContent: {
-        flex: 1,
-    },
-    infoLabel: {
-        fontSize: 14,
-        fontWeight: "700",
-        color: colors.text,
-    },
-    infoValue: {
-        fontSize: 13,
-        color: colors.textSecondary,
-        marginTop: 5,
-    },
-    button: {
-        backgroundColor: colors.primary,
-        padding: 15,
-        borderRadius: 14,
-        alignItems: "center",
-        marginTop: 20,
-        width: "100%",
-    },
-    buttonText: {
-        color: "#FFFFFF",
-        fontWeight: "700",
-    },
-    error: {
-        color: "#DC2626",
-        marginTop: 12,
-        textAlign: "center",
-    },
-});

@@ -35,6 +35,8 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         marginTop: 8,
     },
+
+
 });
 
 export default styles;

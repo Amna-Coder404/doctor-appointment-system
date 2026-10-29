@@ -8,11 +8,41 @@ import colors from "../../lib/colors";
 import styles from "../../styles/appointmentsScreen.style";
 import { formatAppointmentDate, formatMoney } from "../../utils/utils";
 
-const STATUS_STYLES = {
-    pending: styles.statusPending,
-    confirmed: styles.statusConfirmed,
-    completed: styles.statusCompleted,
-    cancelled: styles.statusCancelled,
+const STATUS_CONFIG = {
+    pending: {
+        badge: styles.statusPending,
+        text: styles.statusPendingText,
+        dot: styles.statusPendingDot,
+    },
+    confirmed: {
+        badge: styles.statusConfirmed,
+        text: styles.statusConfirmedText,
+        dot: styles.statusConfirmedDot,
+    },
+    completed: {
+        badge: styles.statusCompleted,
+        text: styles.statusCompletedText,
+        dot: styles.statusCompletedDot,
+    },
+    cancelled: {
+        badge: styles.statusCancelled,
+        text: styles.statusCancelledText,
+        dot: styles.statusCancelledDot,
+    },
+    unknown: {
+        badge: styles.statusUnknown,
+        text: styles.statusUnknownText,
+        dot: styles.statusUnknownDot,
+    },
+};
+
+const PAYMENT_CONFIG = {
+    paid: [styles.pillSuccess, styles.pillSuccessText],
+    pending: [styles.pillWarning, styles.pillWarningText],
+    unpaid: [styles.pillWarning, styles.pillWarningText],
+    failed: [styles.pillDanger, styles.pillDangerText],
+    refunded: [styles.pillDanger, styles.pillDangerText],
+    unknown: [styles.pillNeutral, styles.pillNeutralText],
 };
 
 const getDoctor = (appointment) => {
@@ -20,38 +50,50 @@ const getDoctor = (appointment) => {
     return Array.isArray(relation) ? relation[0] : relation;
 };
 
-function DetailRow({ icon, label, value }) {
+function ScheduleCell({ icon, label, value }) {
     return (
-        <MotiView style={styles.detailRow}>
-            <Ionicons name={icon} size={19} color={colors.primary} />
-            <MotiView style={styles.detailContent}>
-                <MotiText style={styles.detailLabel}>{label}</MotiText>
-                <MotiText style={styles.detailValue}>{value}</MotiText>
+        <MotiView style={styles.scheduleCell}>
+            <MotiView style={styles.scheduleHeader}>
+                <MotiView style={styles.scheduleIcon}>
+                    <Ionicons name={icon} size={14} color={colors.primary} />
+                </MotiView>
+                <MotiText style={styles.scheduleLabel}>{label}</MotiText>
             </MotiView>
+            <MotiText style={styles.scheduleValue}>{value}</MotiText>
         </MotiView>
     );
 }
 
-export default function AppointmentCard({ appointment, onCancel }) {
+export default function AppointmentCard({ appointment, onCancel, index = 0 }) {
+    const router = useRouter();
+
     const doctor = getDoctor(appointment);
     const status = appointment.status?.toLowerCase() ?? "unknown";
     const canCancel = ["pending", "confirmed"].includes(status);
-    const statusStyle = STATUS_STYLES[status] ?? styles.statusUnknown;
+    const statusConfig = STATUS_CONFIG[status] ?? STATUS_CONFIG.unknown;
 
-    const router = useRouter();
+    const paymentKey = appointment.payment_status?.toLowerCase() ?? "unknown";
+    const [paymentPill, paymentPillText] =
+        PAYMENT_CONFIG[paymentKey] ?? PAYMENT_CONFIG.unknown;
+
     // go to doctor screen
     const handleDoctorPress = () => {
         if (!doctor?.id) return;
-
         router.push(`/doctor/${doctor.id}`);
     };
+
     return (
         <MotiView
-            from={{ opacity: 0, translateY: 12 }}
+            from={{ opacity: 0, translateY: 16 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "timing", duration: 300 }}
+            transition={{
+                type: "timing",
+                duration: 350,
+                delay: Math.min(index, 6) * 60,
+            }}
             style={styles.card}
         >
+            {/* Header */}
             <MotiView style={styles.cardHeader}>
                 <MotiView style={styles.doctorIcon}>
                     <Ionicons
@@ -62,71 +104,87 @@ export default function AppointmentCard({ appointment, onCancel }) {
                 </MotiView>
 
                 <MotiView style={styles.doctorInfo}>
-
-                    <Pressable onPress={handleDoctorPress}>
-                        <MotiText style={styles.doctorName}>
-                            {doctor?.full_name ? `Dr. ${doctor.full_name}` : "Doctor"}
+                    <Pressable
+                        onPress={handleDoctorPress}
+                        hitSlop={6}
+                        accessibilityRole="button"
+                        accessibilityLabel="View doctor profile"
+                    >
+                        <MotiText style={styles.doctorName} numberOfLines={1}>
+                            {doctor?.full_name
+                                ? `Dr. ${doctor.full_name}`
+                                : "Doctor"}
                         </MotiText>
                     </Pressable>
-                    <MotiText style={styles.specialization}>
+                    <MotiText style={styles.specialization} numberOfLines={1}>
                         {doctor?.specialization ?? "Specialization unavailable"}
                     </MotiText>
                 </MotiView>
 
-                <MotiView style={[styles.statusBadge, statusStyle]}>
-                    <MotiText style={styles.statusText}>{status}</MotiText>
+                <MotiView style={[styles.statusBadge, statusConfig.badge]}>
+                    <MotiView style={[styles.statusDot, statusConfig.dot]} />
+                    <MotiText style={[styles.statusText, statusConfig.text]}>
+                        {status}
+                    </MotiText>
                 </MotiView>
             </MotiView>
 
-            <MotiView style={styles.divider} />
-
-            <DetailRow
-                icon="calendar-outline"
-                label="Appointment date"
-                value={formatAppointmentDate(appointment.starts_at)}
-            />
-            <DetailRow
-                icon="time-outline"
-                label="Ends at"
-                value={formatAppointmentDate(appointment.ends_at)}
-            />
-            <DetailRow
-                icon="wallet-outline"
-                label="Consultation fee"
-                value={formatMoney(appointment.consultation_fee)}
-            />
-
-            <MotiView style={styles.paymentRow}>
-                <MotiText style={styles.detailLabel}>Payment status</MotiText>
-                <MotiText style={styles.paymentValue}>
-                    {appointment.payment_status ?? "Unknown"}
-                </MotiText>
+            {/* Schedule */}
+            <MotiView style={styles.scheduleBox}>
+                <ScheduleCell
+                    icon="calendar-outline"
+                    label="Starts"
+                    value={formatAppointmentDate(appointment.starts_at)}
+                />
+                <MotiView style={styles.scheduleDivider} />
+                <ScheduleCell
+                    icon="time-outline"
+                    label="Ends"
+                    value={formatAppointmentDate(appointment.ends_at)}
+                />
             </MotiView>
 
-            {canCancel && (
-                <MotiPressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Cancel appointment"
-                    onPress={() => onCancel(appointment.id)}
-                    animate={({ pressed }) => {
-                        "worklet";
-                        return {
-                            opacity: pressed ? 0.75 : 1,
-                            scale: pressed ? 0.98 : 1,
-                        };
-                    }}
-                    transition={{ type: "timing", duration: 120 }}
-                    style={styles.cancelButton}
-                >
-                    <Ionicons
-                        name="close-circle-outline"
-                        size={19}
-                        color={colors.danger}
-                    />
-                    <MotiText style={styles.cancelText}>
-                        Cancel appointment
+            {/* Fee + payment */}
+            <MotiView style={styles.footerRow}>
+                <MotiView>
+                    <MotiText style={styles.feeLabel}>Consultation fee</MotiText>
+                    <MotiText style={styles.feeValue}>
+                        {formatMoney(appointment.consultation_fee)}
                     </MotiText>
-                </MotiPressable>
+                </MotiView>
+
+                <MotiView style={[styles.paymentPill, paymentPill]}>
+                    <MotiText style={[styles.paymentPillText, paymentPillText]}>
+                        {appointment.payment_status ?? "Unknown"}
+                    </MotiText>
+                </MotiView>
+            </MotiView>
+
+            {/* Small cancel button */}
+            {canCancel && (
+                <MotiView style={styles.actionsRow}>
+                    <MotiPressable
+                        accessibilityRole="button"
+                        accessibilityLabel="Cancel appointment"
+                        onPress={() => onCancel(appointment.id)}
+                        animate={({ pressed }) => {
+                            "worklet";
+                            return {
+                                opacity: pressed ? 0.75 : 1,
+                                scale: pressed ? 0.96 : 1,
+                            };
+                        }}
+                        transition={{ type: "timing", duration: 120 }}
+                        style={styles.cancelButton}
+                    >
+                        <Ionicons
+                            name="close-circle-outline"
+                            size={15}
+                            color={colors.danger}
+                        />
+                        <MotiText style={styles.cancelText}>Cancel</MotiText>
+                    </MotiPressable>
+                </MotiView>
             )}
         </MotiView>
     );

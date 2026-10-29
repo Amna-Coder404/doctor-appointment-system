@@ -101,11 +101,7 @@ export default function ProfileModal({ visible, onClose, onSaved }) {
                                     />
                                 ) : (
                                     <View style={styles.avatarPlaceholder}>
-                                        <Ionicons
-                                            name="person"
-                                            size={38}
-                                            color={colors.primary}
-                                        />
+                                        <Ionicons name="person" size={44} color={colors.primary} />
                                     </View>
                                 )}
 
