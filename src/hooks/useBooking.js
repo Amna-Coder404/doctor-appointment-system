@@ -6,7 +6,7 @@ import { getBookedAppointments } from "../services/appointmentsService";
 import { getDoctorAvailability } from "../services/doctorService";
 import { generateTimeSlots } from "../utils/utils";
 
-
+import useNetworkStatus from "./useNetworkStatus";
 
 function overlaps(startMs, endMs, appointment) {
     const existingStart = new Date(appointment.starts_at).getTime();
@@ -21,7 +21,8 @@ export default function useBooking({ id, doctor }) {
         return date;
     });
 
-
+    // for offline
+    const { isOnline } = useNetworkStatus();
 
     const [selectedTime, setSelectedTime] = useState(null);
     const [schedules, setSchedules] = useState([]);
@@ -45,6 +46,7 @@ export default function useBooking({ id, doctor }) {
     function closeLogin() {
         setNeedsLogin(false);
     }
+
     const loadAvailability = useCallback(async () => {
         if (!id) {
             setError("Doctor ID is missing. Please open the doctor again.");
@@ -65,7 +67,10 @@ export default function useBooking({ id, doctor }) {
             setSchedules(scheduleData);
             setBooked(bookedData);
         } catch (err) {
-            setError(err?.message || "Unable to load available times.");
+            setError(
+                err?.message ||
+                "Unable to load available appointment times."
+            );
         } finally {
             setLoading(false);
         }
@@ -105,6 +110,14 @@ export default function useBooking({ id, doctor }) {
     }
 
     async function confirmBooking() {
+        // Do not send availability requests without internet.
+        if (!isOnline) {
+            setError(
+                "You're offline. Connect to the internet to load available appointment times."
+            );
+            setLoading(false);
+            return;
+        }
         if (!doctor || !id || !selectedTime) {
             Alert.alert(
                 "Select a time",

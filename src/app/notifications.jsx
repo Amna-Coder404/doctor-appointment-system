@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import NotFound from "../components/NotFound";
 import NotificationCard from "../components/NotificationCard";
 import useAuth from "../hooks/useAuth";
+import useNetworkStatus from "../hooks/useNetworkStatus";
 import useNotifications from "../hooks/useNotifications";
 import colors from "../lib/colors";
 import styles from "../styles/notificationsScreen.style";
@@ -24,7 +25,7 @@ import { formatDate } from "../utils/utils";
 export default function NotificationsScreen() {
     const router = useRouter();
     const { user } = useAuth();
-
+    const { isOnline } = useNetworkStatus();
     const {
         notifications,
         unreadCount,
@@ -50,6 +51,14 @@ export default function NotificationsScreen() {
 
 
     const handleDelete = (item) => {
+        if (!isOnline) {
+            Alert.alert(
+                "No Internet Connection",
+                "You cannot delete notifications while offline. Please turn on Wi-Fi or mobile data and try again."
+            );
+            return;
+        }
+
         Alert.alert(
             "Delete notification",
             "This notification will be permanently deleted.",
@@ -78,6 +87,14 @@ export default function NotificationsScreen() {
             {
                 text: item.is_read ? "Mark as unread" : "Mark as read",
                 onPress: async () => {
+                    if (!isOnline) {
+                        Alert.alert(
+                            "No Internet Connection",
+                            "You cannot mark notifications as read or unread while offline. Please turn on Wi-Fi or mobile data and try again."
+                        );
+                        return;
+                    }
+
                     try {
                         await setNotificationReadState(
                             item.id,
@@ -96,12 +113,23 @@ export default function NotificationsScreen() {
                 style: "destructive",
                 onPress: () => handleDelete(item),
             },
-            { text: "Cancel", style: "cancel" },
+            {
+                text: "Cancel",
+                style: "cancel",
+            },
         ]);
     };
 
     const handleClearAll = () => {
         if (!notifications.length) return;
+
+        if (!isOnline) {
+            Alert.alert(
+                "No Internet Connection",
+                "You cannot delete notifications while offline. Please turn on Wi-Fi or mobile data and try again."
+            );
+            return;
+        }
 
         Alert.alert(
             "Clear all notifications?",
@@ -125,7 +153,6 @@ export default function NotificationsScreen() {
             ]
         );
     };
-
     const handlePress = async (item) => {
         if (item.is_read) return;
 

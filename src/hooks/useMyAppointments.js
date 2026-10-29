@@ -1,9 +1,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Alert } from "react-native";
 import {
     cancelMyAppointment,
     getMyAppointments,
 } from "../services/appointmentsService";
+import useNetworkStatus from "./useNetworkStatus";
+
+
 
 const PAGE_SIZE = 2;
 
@@ -20,10 +24,16 @@ export const useMyAppointments = () => {
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
     const [statusFilter, setStatusFilter] = useState("all");
 
+
+
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState("");
+
+
+    // for check internet
+    const { isOnline } = useNetworkStatus();
 
     const fetchAppointments = useCallback(
         async (isRefreshing = false) => {
@@ -118,6 +128,15 @@ export const useMyAppointments = () => {
     }, [appointments]);
 
     const cancelAppointment = async (appointmentId) => {
+        if (!isOnline) {
+            Alert.alert(
+                "No Internet Connection",
+                "You cannot cancel an appointment while offline. Please turn on Wi-Fi or mobile data and try again."
+            );
+
+            return false;
+        }
+
         setError("");
 
         try {

@@ -1,31 +1,107 @@
 
+import {
+    getCachedRecords,
+    saveCachedRecords,
+} from "../database/cacheRepository";
+import { getDatabase } from "../database/getDatabase";
 import { supabase } from "../lib/supabase";
 
-export const getNotifications = async (userId, role = "patient") => {
-    const { data, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .eq("recipient_id", userId)
-        .eq("recipient_role", role)
-        .order("created_at", { ascending: false });
+const getNotificationScope = (userId, role) => `notifications:${userId}:${role}`;
 
-    if (error) throw error;
-    return data ?? [];
+export const getNotifications = async (
+    userId,
+    role = "patient"
+) => {
+    const db = await getDatabase();
+    const scope = getNotificationScope(userId, role);
+
+    try {
+        const { data, error } = await supabase
+            .from("notifications")
+            .select("*")
+            .eq("recipient_id", userId)
+            .eq("recipient_role", role)
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const notifications = data ?? [];
+
+        // Save notifications for offline access.
+        // Clear old records first so deleted server records
+        // don't remain in the local cache.
+        await db.runAsync(
+            "DELETE FROM local_cache WHERE cache_scope = ? AND record_type = ?",
+            scope,
+            "notification"
+        );
+
+        await saveCachedRecords(
+            db,
+            scope,
+            "notification",
+            notifications
+        );
+
+        return notifications;
+    } catch (error) {
+        // If the network request fails, use cached notifications.
+        const cachedNotifications = await getCachedRecords(
+            db,
+            scope,
+            "notification"
+        );
+
+        if (cachedNotifications.length > 0) {
+            return cachedNotifications.sort(
+                (a, b) =>
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime()
+            );
+        }
+
+        throw error;
+    }
 };
 
-export const getUnreadNotificationCount = async (userId, role = "patient") => {
-    const { count, error } = await supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("recipient_id", userId)
-        .eq("recipient_role", role)
-        .eq("is_read", false);
+export const getUnreadNotificationCount = async (
+    userId,
+    role = "patient"
+) => {
+    const db = await getDatabase();
+    const scope = getNotificationScope(userId, role);
 
-    if (error) throw error;
-    return count ?? 0;
+    try {
+        const { count, error } = await supabase
+            .from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq("recipient_id", userId)
+            .eq("recipient_role", role)
+            .eq("is_read", false);
+
+        if (error) throw error;
+
+        return count ?? 0;
+    } catch (error) {
+        const cachedNotifications = await getCachedRecords(
+            db,
+            scope,
+            "notification"
+        );
+
+        if (cachedNotifications.length > 0) {
+            return cachedNotifications.filter(
+                (notification) => !notification.is_read
+            ).length;
+        }
+
+        throw error;
+    }
 };
 
-export const markNotificationAsRead = async (notificationId) => {
+export const markNotificationAsRead = async (
+    notificationId
+) => {
     const { error } = await supabase
         .from("notifications")
         .update({

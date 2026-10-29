@@ -13,6 +13,7 @@ import {
     View
 } from "react-native";
 import useAuth from "../../hooks/useAuth";
+import useNetworkStatus from "../../hooks/useNetworkStatus";
 import colors from "../../lib/colors";
 import styles from "../../styles/auth.style";
 
@@ -27,33 +28,69 @@ export default function LoginScreen() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const { isOnline } = useNetworkStatus();
+
     const handleSubmit = async () => {
+        // 4. Check internet connection
+        if (!isOnline) {
+            Alert.alert(
+                "You're offline",
+                "Please connect to the internet and try again."
+            );
+            return;
+        }
+        // 1. Check required fields first
         if (!email.trim() || !password.trim()) {
-            Alert.alert("Missing information", "Please enter your email and password.");
+            Alert.alert(
+                "Missing information",
+                "Please enter your email and password."
+            );
             return;
         }
 
+        // 2. Check full name for sign-up
         if (isSignUp && !fullName.trim()) {
-            Alert.alert("Missing information", "Please enter your full name.");
+            Alert.alert(
+                "Missing information",
+                "Please enter your full name."
+            );
             return;
         }
 
+        // 3. Validate password
         if (isSignUp && password.length < 6) {
-            Alert.alert("Weak password", "Your password must contain at least 6 characters.");
+            Alert.alert(
+                "Weak password",
+                "Your password must contain at least 6 characters."
+            );
             return;
         }
 
+
+
+        // 5. Perform authentication
         try {
             setLoading(true);
 
-            if (isSignUp) {
-                const data = await signUp(fullName, email, password);
+            const normalizedEmail = email.trim().toLowerCase();
 
-                if (!data.session) {
+            if (isSignUp) {
+                const data = await signUp(
+                    fullName.trim(),
+                    normalizedEmail,
+                    password
+                );
+
+                if (!data?.session) {
                     Alert.alert(
                         "Check your email",
                         "Your account has been created. Verify your email before signing in.",
-                        [{ text: "OK", onPress: () => setIsSignUp(false) }]
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => setIsSignUp(false),
+                            },
+                        ]
                     );
                     return;
                 }
@@ -63,12 +100,12 @@ export default function LoginScreen() {
                 return;
             }
 
-            await signIn(email, password);
+            await signIn(normalizedEmail, password);
             router.back();
         } catch (error) {
             Alert.alert(
                 isSignUp ? "Sign-up failed" : "Login failed",
-                error.message || "Something went wrong. Please try again."
+                error?.message || "Something went wrong. Please try again."
             );
         } finally {
             setLoading(false);

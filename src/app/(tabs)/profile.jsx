@@ -43,6 +43,11 @@ export default function ProfileScreen() {
         setAvatarFailed(false);
     }, [profile?.avatar_url]);
 
+    useEffect(() => {
+        if (user?.id) {
+            loadCurrentUserProfile();
+        }
+    }, [user?.id, loadCurrentUserProfile]);
     if (authLoading) return <Loader />;
 
     return (
