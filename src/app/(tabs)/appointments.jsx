@@ -43,6 +43,13 @@ export default function AppointmentsScreen() {
         selectStatusFilter,
         fetchAppointments,
         cancelAppointment,
+        // Multi-select delete
+        selectedIds,
+        selectionMode,
+        toggleSelection,
+        startSelection,
+        exitSelection,
+        deleteSelectedAppointments,
     } = useMyAppointments();
 
     const [retrying, setRetrying] = useState(false);
@@ -89,7 +96,42 @@ export default function AppointmentsScreen() {
             ]
         );
     };
+    const handleDeleteSelected = () => {
+        if (selectedIds.length === 0) {
+            Alert.alert("No appointments selected", "Please select appointments to delete.");
+            return;
+        }
 
+        Alert.alert(
+            "Delete appointments",
+            `Are you sure you want to delete ${selectedIds.length} selected appointment(s)? This action cannot be undone.`,
+            [
+                {
+                    text: "Keep",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            const deletedIds = await deleteSelectedAppointments();
+
+                            Alert.alert(
+                                "Deleted",
+                                `${deletedIds.length} appointment(s) deleted successfully.`
+                            );
+                        } catch (err) {
+                            Alert.alert(
+                                "Unable to delete",
+                                err?.message || "Please try again."
+                            );
+                        }
+                    },
+                },
+            ]
+        );
+    };
 
     if (authLoading) return <Loader />
     if (!user) {
@@ -108,6 +150,7 @@ export default function AppointmentsScreen() {
         <>
             <FlatList
                 style={styles.list}
+
                 contentContainerStyle={[
                     styles.listContent,
                     visibleAppointments.length === 0 &&
@@ -117,9 +160,17 @@ export default function AppointmentsScreen() {
                 keyExtractor={(item) => String(item.id)}
                 renderItem={({ item }) => (
                     <AppointmentCard
+
                         appointment={item}
                         onCancel={handleCancel}
-
+                        selectionMode={selectionMode}
+                        selected={selectedIds.includes(item.id)}
+                        onLongPress={() => startSelection(item.id)}
+                        onPress={() => {
+                            if (selectionMode) {
+                                toggleSelection(item.id);
+                            }
+                        }}
                     />
                 )}
                 ListHeaderComponent={
@@ -135,7 +186,7 @@ export default function AppointmentsScreen() {
                                 <Ionicons
                                     name="calendar"
                                     size={23}
-                                    color={colors.primary}
+                                    color={colors.background}
                                 />
                             </MotiView>
 
@@ -155,7 +206,31 @@ export default function AppointmentsScreen() {
                             selected={statusFilter}
                             onSelect={selectStatusFilter}
                         />
+                        {selectionMode && (
+                            <MotiView
+                                from={{ opacity: 0, translateY: -8 }}
+                                animate={{ opacity: 1, translateY: 0 }}
+                                style={styles.selectionMode}
+                            >
+                                <MotiText style={{ color: colors.text }}>
+                                    {selectedIds.length} selected
+                                </MotiText>
 
+                                <View style={styles.btnCon}>
+                                    <MotiPressable onPress={exitSelection}>
+                                        <MotiText style={{ color: colors.primary }}>
+                                            Cancel
+                                        </MotiText>
+                                    </MotiPressable>
+
+                                    <MotiPressable onPress={handleDeleteSelected}>
+                                        <MotiText style={{ color: colors.danger, fontWeight: "700" }}>
+                                            Delete selected
+                                        </MotiText>
+                                    </MotiPressable>
+                                </View>
+                            </MotiView>
+                        )}
                         {error ? (
                             <MotiView
                                 from={{ opacity: 0 }}
@@ -222,9 +297,7 @@ export default function AppointmentsScreen() {
                                 size="small"
                                 color={colors.primary}
                             />
-                            <MotiText style={styles.mutedText}>
-                                Loading more appointments...
-                            </MotiText>
+                            <ActivityIndicator size={"small"} />
                         </MotiView>
                     ) : hasMore ? (
                         <MotiView style={styles.footer}>

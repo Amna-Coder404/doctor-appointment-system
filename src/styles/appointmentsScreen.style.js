@@ -53,16 +53,18 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 14,
-        marginTop: 22,
-        marginBottom: 8,
+        // marginTop: 22,
+        // marginBottom: 8,
         padding: 18,
         backgroundColor: colors.primary,
-        borderRadius: 22,
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
-        elevation: 5,
+        // borderRadius: 2,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
+        // shadowColor: colors.primary,
+        // shadowOffset: { width: 0, height: 8 },
+        // shadowOpacity: 0.25,
+        // shadowRadius: 16,
+        // elevation: 5,
     },
     summaryIcon: {
         width: 50,
@@ -398,6 +400,18 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         color: colors.danger,
     },
+    selectionMode: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginTop: 14,
+        padding: 12,
+        borderRadius: 12,
+        backgroundColor: colors.surface,
+    },
+    btnCon: {
+        flexDirection: "row", alignItems: "center", gap: 12
+    }
 });
 
 export default styles;

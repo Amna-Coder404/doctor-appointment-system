@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import {
     cancelMyAppointment,
-    getMyAppointments,
+    deleteMyAppointments,
+    getMyAppointments
 } from "../services/appointmentsService";
 import useNetworkStatus from "./useNetworkStatus";
-
 
 
 const PAGE_SIZE = 2;
@@ -24,6 +24,8 @@ export const useMyAppointments = () => {
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
     const [statusFilter, setStatusFilter] = useState("all");
 
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [selectionMode, setSelectionMode] = useState(false);
 
 
     const [loading, setLoading] = useState(true);
@@ -160,6 +162,56 @@ export const useMyAppointments = () => {
         }
     };
 
+    // Delete selected appointment 
+
+    const toggleSelection = (appointmentId) => {
+        setSelectedIds((previous) => {
+            const exists = previous.includes(appointmentId);
+
+            const next = exists
+                ? previous.filter((id) => id !== appointmentId)
+                : [...previous, appointmentId];
+
+            if (next.length === 0) {
+                setSelectionMode(false);
+            }
+
+            return next;
+        });
+    };
+
+    const startSelection = (appointmentId) => {
+        setSelectionMode(true);
+
+        setSelectedIds((previous) =>
+            previous.includes(appointmentId)
+                ? previous
+                : [...previous, appointmentId]
+        );
+    };
+
+    const exitSelection = () => {
+        setSelectionMode(false);
+        setSelectedIds([]);
+    };
+
+    const deleteSelectedAppointments = async () => {
+        if (selectedIds.length === 0) {
+            throw new Error("Please select at least one appointment.");
+        }
+
+        const deletedIds = await deleteMyAppointments(selectedIds);
+
+        setSelectedIds((previous) =>
+            previous.filter((id) => !deletedIds.includes(id))
+        );
+
+        setSelectionMode(false);
+
+        await fetchAppointments(true);
+
+        return deletedIds;
+    };
     return {
         appointments,
         filteredAppointments,
@@ -180,5 +232,13 @@ export const useMyAppointments = () => {
 
         fetchAppointments,
         cancelAppointment,
+
+        // Delete funcs
+        selectedIds,
+        selectionMode,
+        toggleSelection,
+        startSelection,
+        exitSelection,
+        deleteSelectedAppointments,
     };
 };

@@ -246,3 +246,95 @@ export const getBookedAppointments = async (doctorId, date) => {
         }
     }
 };
+
+
+
+// Delete the appointments supabase + Sqlite Db
+
+/**
+ * Permanently delete multiple appointments.
+ * Supabase deletion happens first; SQLite cache is updated only
+ * after the server confirms the deletion.
+ */
+export const deleteMyAppointments = async (appointmentIds) => {
+    const uniqueIds = [
+        ...new Set(
+            (appointmentIds ?? [])
+                .filter((id) => typeof id === "string" && id.length > 0)
+        ),
+    ];
+
+    if (uniqueIds.length === 0) {
+        throw new Error("Please select at least one appointment.");
+    }
+
+    const network = await NetInfo.fetch();
+
+    const isOnline =
+        network.isConnected === true &&
+        network.isInternetReachable !== false;
+
+    if (!isOnline) {
+        throw new Error(
+            "Connect to the internet before deleting appointments."
+        );
+    }
+
+    const {
+        data: { user },
+        error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError) throw authError;
+
+    if (!user) {
+        throw new Error("Please sign in to delete appointments.");
+    }
+
+    // Delete only appointments belonging to the authenticated patient.
+    const { data: deletedRows, error } = await supabase
+        .from("appointments")
+        .delete()
+        .eq("patient_id", user.id)
+        .in("id", uniqueIds)
+        .select("id");
+
+    if (error) throw error;
+
+    const deletedIds = (deletedRows ?? []).map((row) => row.id);
+
+    if (deletedIds.length === 0) {
+        throw new Error(
+            "No appointments were deleted. They may no longer be available."
+        );
+    }
+
+    // Update the local SQLite cache after server deletion succeeds.
+    const db = await getDatabase();
+    await initializeDatabase(db);
+
+    const scope = `appointments:${user.id}`;
+
+    const cachedAppointments = await getCachedRecords(
+        db,
+        scope,
+        "appointment"
+    );
+
+    const remainingAppointments = cachedAppointments.filter(
+        (appointment) => !deletedIds.includes(appointment.id)
+    );
+
+    await clearCachedRecords(db, scope);
+
+    if (remainingAppointments.length > 0) {
+        await saveCachedRecords(
+            db,
+            scope,
+            "appointment",
+            remainingAppointments
+        );
+    }
+
+    return deletedIds;
+};
