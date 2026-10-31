@@ -1,6 +1,30 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useEffect, useRef } from "react";
+import { Animated } from "react-native";
 import colors from "../../lib/colors";
+
+function TabIcon({ focused, name, color, size }) {
+    const scale = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        Animated.spring(scale, {
+            toValue: focused ? 1.25 : 1,
+            friction: 4,
+            useNativeDriver: true,
+        }).start();
+    }, [focused]);
+
+    return (
+        <Animated.View style={{ transform: [{ scale }] }}>
+            <Ionicons
+                name={focused ? name : `${name}-outline`}
+                size={size}
+                color={color}
+            />
+        </Animated.View>
+    );
+}
 
 export default function TabsLayout() {
     return (
@@ -26,8 +50,8 @@ export default function TabsLayout() {
                 name="index"
                 options={{
                     title: "Home",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="home-outline" size={size} color={color} />
+                    tabBarIcon: ({ focused, color, size }) => (
+                        <TabIcon focused={focused} name="home" color={color} size={size} />
                     ),
                 }}
             />
@@ -36,12 +60,8 @@ export default function TabsLayout() {
                 name="appointments"
                 options={{
                     title: "Appointments",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons
-                            name="calendar-outline"
-                            size={size}
-                            color={color}
-                        />
+                    tabBarIcon: ({ focused, color, size }) => (
+                        <TabIcon focused={focused} name="calendar" color={color} size={size} />
                     ),
                 }}
             />
@@ -50,12 +70,8 @@ export default function TabsLayout() {
                 name="profile"
                 options={{
                     title: "Profile",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons
-                            name="person-outline"
-                            size={size}
-                            color={color}
-                        />
+                    tabBarIcon: ({ focused, color, size }) => (
+                        <TabIcon focused={focused} name="person" color={color} size={size} />
                     ),
                 }}
             />

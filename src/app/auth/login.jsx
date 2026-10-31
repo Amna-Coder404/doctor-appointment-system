@@ -1,5 +1,5 @@
-
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -66,8 +66,6 @@ export default function LoginScreen() {
             return;
         }
 
-
-
         // 5. Perform authentication
         try {
             setLoading(true);
@@ -112,35 +110,35 @@ export default function LoginScreen() {
         }
     };
 
-
     return (
         <KeyboardAvoidingView
             style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <ScrollView
                 contentContainerStyle={styles.content}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >
-                <Pressable
-                    style={styles.backButton}
-                    onPress={() => router.back()}
+                <LinearGradient
+                    colors={[colors.primary, "#1E3A8A"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.header}
                 >
-                    <Ionicons name="arrow-back" size={23} color={colors.text} />
-                </Pressable>
+                    <Pressable
+                        style={styles.backButton}
+                        onPress={() => router.back()}
+                    >
+                        <Ionicons name="arrow-back" size={22} color="#fff" />
+                    </Pressable>
 
-                <View style={styles.hero}>
                     <View style={styles.logo}>
-                        <Ionicons
-                            name="heart"
-                            size={36}
-                            color={colors.textOnPrimary}
-                        />
+                        <Ionicons name="heart" size={34} color={colors.primary} />
                     </View>
 
                     <Text style={styles.title}>
-                        {isSignUp ? "Create your account" : "Welcome to MediBook"}
+                        {isSignUp ? "Create your account" : "Welcome to CareUp"}
                     </Text>
 
                     <Text style={styles.subtitle}>
@@ -148,9 +146,9 @@ export default function LoginScreen() {
                             ? "Create an account to book and manage your appointments."
                             : "Sign in to book appointments and manage your visits."}
                     </Text>
-                </View>
+                </LinearGradient>
 
-                <View style={styles.form}>
+                <View style={styles.card}>
                     {isSignUp && (
                         <>
                             <Text style={styles.label}>Full name</Text>
@@ -210,7 +208,10 @@ export default function LoginScreen() {
                             autoCapitalize="none"
                             editable={!loading}
                         />
-                        <Pressable onPress={() => setShowPassword(!showPassword)}>
+                        <Pressable
+                            onPress={() => setShowPassword(!showPassword)}
+                            hitSlop={10}
+                        >
                             <Ionicons
                                 name={showPassword ? "eye-off-outline" : "eye-outline"}
                                 size={21}
@@ -218,8 +219,6 @@ export default function LoginScreen() {
                             />
                         </Pressable>
                     </View>
-
-
 
                     <Pressable
                         style={[styles.submitButton, loading && styles.disabledButton]}
@@ -257,13 +256,12 @@ export default function LoginScreen() {
                             </Text>
                         </Pressable>
                     </View>
-                </View>
 
-                <Text style={styles.note}>
-                    Your health journey starts with the right care.
-                </Text>
+                    <Text style={styles.note}>
+                        Your health journey starts with the right care.
+                    </Text>
+                </View>
             </ScrollView>
         </KeyboardAvoidingView>
     );
 }
-

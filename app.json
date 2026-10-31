@@ -1,23 +1,21 @@
 {
   "expo": {
-    "name": "doctor-appointment-system",
-    "slug": "doctor-appointment-system",
+    "name": "CareUp",
+    "slug": "careup",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "doctorappointmentsystem",
+    "scheme": "careup",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "icon": "./assets/expo.icon"
-    },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0679EE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.mobiledevpro.careup"
     },
     "web": {
       "output": "static",
@@ -28,17 +26,28 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#0679EE",
+          "image": "./assets/images/android-icon-foreground.png",
+          "imageWidth": 200
         }
       ],
       "expo-web-browser",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "c93886c8-67af-4cad-8e21-5261d6b988e2"
+      }
     }
   }
 }

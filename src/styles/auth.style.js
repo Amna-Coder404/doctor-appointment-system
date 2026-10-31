@@ -2,80 +2,61 @@ import { StyleSheet } from "react-native";
 import colors from "../lib/colors";
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.background,
-    }
+    container: { flex: 1, backgroundColor: colors.primary },
+    content: { flexGrow: 1 },
 
-    ,
-    content: {
-        flexGrow: 1,
-        padding: 24,
-        paddingBottom: 32,
-    }
-
-    ,
+    header: {
+        alignItems: "center",
+        paddingTop: 56,
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+    },
     backButton: {
-        width: 44,
-        height: 44,
+        position: "absolute",
+        top: 52,
+        left: 20,
+        width: 42,
+        height: 42,
         borderRadius: 14,
-        backgroundColor: colors.surface,
+        backgroundColor: "rgba(255,255,255,0.18)",
         alignItems: "center",
         justifyContent: "center",
-        borderWidth: 1,
-        borderColor: colors.border,
-    }
-
-    ,
-    hero: {
-        alignItems: "center",
-        marginTop: 42,
-        marginBottom: 32,
-    }
-
-    ,
+    },
     logo: {
-        width: 72,
-        height: 72,
-        borderRadius: 23,
-        backgroundColor: colors.primary,
+        width: 76,
+        height: 76,
+        borderRadius: 38,
+        backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
-        marginBottom: 20,
-    }
-
-    ,
-    title: {
-        fontSize: 26,
-        fontWeight: "800",
-        color: colors.text,
-        textAlign: "center",
-    }
-
-    ,
+        marginTop: 24,
+        marginBottom: 18,
+        elevation: 6,
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 6 },
+    },
+    title: { fontSize: 26, fontWeight: "800", color: "#fff", textAlign: "center" },
     subtitle: {
         fontSize: 14,
-        lineHeight: 22,
-        color: colors.textSecondary,
+        lineHeight: 21,
+        color: "rgba(255,255,255,0.8)",
         textAlign: "center",
-        marginTop: 10,
-        maxWidth: 300,
-    }
-
-    ,
-    form: {
-        gap: 10,
-    }
-
-    ,
-    label: {
-        fontSize: 14,
-        fontWeight: "700",
-        color: colors.text,
         marginTop: 8,
-    }
+        maxWidth: 300,
+    },
 
-    ,
+    card: {
+        flex: 1,
+        backgroundColor: colors.background,
+        borderTopLeftRadius: 32,
+        borderTopRightRadius: 32,
+        padding: 24,
+        paddingBottom: 32,
+        gap: 10,
+    },
+    label: { fontSize: 14, fontWeight: "700", color: colors.text, marginTop: 8 },
     inputWrapper: {
         minHeight: 54,
         flexDirection: "row",
@@ -83,87 +64,34 @@ const styles = StyleSheet.create({
         gap: 12,
         paddingHorizontal: 15,
         backgroundColor: colors.surface,
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderColor: colors.border,
-        borderRadius: 15,
-    }
+        borderRadius: 16,
+    },
+    input: { flex: 1, color: colors.text, fontSize: 15, paddingVertical: 14 },
 
-    ,
-    input: {
-        flex: 1,
-        color: colors.text,
-        fontSize: 15,
-        paddingVertical: 14,
-    }
-
-    ,
-    forgotButton: {
-        alignSelf: "flex-end",
-        paddingVertical: 8,
-    }
-
-    ,
-    forgotText: {
-        color: colors.primary,
-        fontSize: 13,
-        fontWeight: "700",
-    }
-
-    ,
     submitButton: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         gap: 10,
         backgroundColor: colors.primary,
-        borderRadius: 15,
+        borderRadius: 16,
         paddingVertical: 17,
-        marginTop: 14,
-    }
+        marginTop: 10,
+        elevation: 4,
+        shadowColor: colors.primary,
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 6 },
+    },
+    disabledButton: { opacity: 0.6 },
+    submitText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: "800" },
 
-    ,
-    disabledButton: {
-        opacity: 0.6,
-    }
-
-    ,
-    submitText: {
-        color: colors.textOnPrimary,
-        fontSize: 16,
-        fontWeight: "800",
-    }
-
-    ,
-    switchRow: {
-        flexDirection: "row",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        marginTop: 20,
-    }
-
-    ,
-    switchText: {
-        color: colors.textSecondary,
-        fontSize: 14,
-    }
-
-    ,
-    switchLink: {
-        color: colors.primary,
-        fontSize: 14,
-        fontWeight: "800",
-    }
-
-    ,
-    note: {
-        textAlign: "center",
-        fontSize: 13,
-        color: colors.textSecondary,
-        marginTop: 28,
-    }
-
-    ,
+    switchRow: { flexDirection: "row", justifyContent: "center", flexWrap: "wrap", marginTop: 18 },
+    switchText: { color: colors.textSecondary, fontSize: 14 },
+    switchLink: { color: colors.primary, fontSize: 14, fontWeight: "800" },
+    note: { textAlign: "center", fontSize: 13, color: colors.textSecondary, marginTop: 20 },
 });
 
-
-export default styles
+export default styles;

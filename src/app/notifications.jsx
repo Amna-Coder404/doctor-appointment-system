@@ -2,16 +2,16 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
-    ActivityIndicator,
     Alert,
     FlatList,
     Pressable,
     RefreshControl,
     Text,
-    View,
+    View
 } from "react-native";
 
 import { useEffect } from "react";
+import Loader from "../components/Loader";
 import NotFound from "../components/NotFound";
 import NotificationCard from "../components/NotificationCard";
 import useAuth from "../hooks/useAuth";
@@ -199,12 +199,7 @@ export default function NotificationsScreen() {
             </View>
 
             {loading ? (
-                <View style={styles.centered}>
-                    <ActivityIndicator
-                        size="large"
-                        color={colors.primary}
-                    />
-                </View>
+                <Loader />
             ) : error && notifications.length === 0 ? (
                 <View style={styles.centered}>
                     <Ionicons
